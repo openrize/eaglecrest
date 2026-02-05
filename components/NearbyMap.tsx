@@ -22,28 +22,12 @@ const Popup = dynamic(
     () => import('react-leaflet').then(mod => mod.Popup),
     { ssr: false }
 );
-const useMap = dynamic(
-    () => import('react-leaflet').then(mod => mod.useMap),
-    { ssr: false }
-) as any;
 
 interface NearbyMapProps {
     selectedCity: City;
     onUserSelect?: (user: NearbyUser) => void;
     onGroupSelect?: (group: NearbyGroup) => void;
     selectedGroup?: NearbyGroup | null;
-}
-
-// Component to handle map center changes
-function MapCenterUpdater({ center }: { center: [number, number] }) {
-    const MapHook = require('react-leaflet').useMap;
-    const map = MapHook();
-
-    useEffect(() => {
-        map.setView(center, 13, { animate: true });
-    }, [center, map]);
-
-    return null;
 }
 
 export default function NearbyMap({ selectedCity, onUserSelect, onGroupSelect, selectedGroup }: NearbyMapProps) {
