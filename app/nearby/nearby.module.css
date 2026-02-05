@@ -1,0 +1,364 @@
+.pageWrapper {
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    flex-direction: column;
+}
+
+.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    padding: 40px 0;
+    color: white;
+}
+
+.heroContent {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.heroTitle {
+    font-size: 2rem;
+    color: white;
+    margin: 0;
+    font-family: var(--font-heading);
+}
+
+.heroSubtitle {
+    opacity: 0.85;
+    font-size: 1rem;
+}
+
+.locationBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-top: 12px;
+    width: fit-content;
+}
+
+.mainContent {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    background: var(--background);
+}
+
+@media (min-width: 1024px) {
+    .mainContent {
+        grid-template-columns: 1fr 400px;
+    }
+}
+
+.mapSection {
+    height: 50vh;
+    position: relative;
+}
+
+@media (min-width: 1024px) {
+    .mapSection {
+        height: calc(100vh - var(--header-height) - 140px);
+        position: sticky;
+        top: var(--header-height);
+    }
+}
+
+.groupsSection {
+    height: 50vh;
+    overflow: hidden;
+    border-left: 1px solid var(--border);
+}
+
+@media (min-width: 1024px) {
+    .groupsSection {
+        height: calc(100vh - var(--header-height) - 140px);
+    }
+}
+
+/* Floating action button for mobile */
+.fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.fab:hover {
+    transform: scale(1.05);
+    background: var(--primary-light);
+}
+
+@media (min-width: 1024px) {
+    .fab {
+        display: none;
+    }
+}
+
+/* Selected group overlay */
+.groupOverlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    max-height: 60vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.overlayHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+}
+
+.overlayTitle {
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.closeBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    border: none;
+}
+
+.overlayContent {
+    padding: 20px;
+}
+
+.overlayDescription {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.membersList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.memberItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.memberAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border);
+}
+
+.memberName {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Action Buttons */
+.actionButtons {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.joinBtn {
+    flex: 1;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.chatBtn {
+    flex: 1;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    animation: fadeIn 0.3s ease;
+}
+
+.chatBtn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+.joinBtn:hover:not(:disabled) {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+.joinBtn:disabled {
+    cursor: not-allowed;
+}
+
+.joinBtnLoading {
+    background: var(--primary-light);
+    opacity: 0.9;
+}
+
+.joinBtnJoined {
+    background: var(--success);
+    animation: successPop 0.4s ease;
+}
+
+.joinBtnJoined:hover {
+    background: var(--success);
+    transform: none;
+}
+
+@keyframes successPop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.joinedMessage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: var(--radius);
+    color: var(--success);
+    font-size: 14px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Confetti animation */
+.confettiContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.confetti {
+    position: absolute;
+    top: -10px;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: confettiFall 2s ease-out forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(400px) rotate(720deg);
+        opacity: 0;
+    }
+}

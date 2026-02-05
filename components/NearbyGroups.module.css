@@ -1,0 +1,105 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--background);
+}
+
+.header {
+    padding: 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.titleRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.icon {
+    color: var(--primary);
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+    font-family: var(--font-body);
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.filters {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filterBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--background);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.filterBtn:hover {
+    border-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.filterActive {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.filterActive:hover {
+    background: var(--primary-light);
+    color: white;
+}
+
+.filterEmoji {
+    font-size: 14px;
+}
+
+.groupList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.emptyState {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--text-muted);
+    padding: 40px;
+    text-align: center;
+}

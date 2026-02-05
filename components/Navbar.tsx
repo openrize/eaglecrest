@@ -12,6 +12,7 @@ export default function Navbar() {
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     const navLinks = [
+        { name: 'Explore', href: '/nearby' },
         { name: 'Destinations', href: '/destinations' },
         { name: 'Packages', href: '/packages' },
         { name: 'About', href: '/about' },
