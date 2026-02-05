@@ -1,12 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Users, Plus, Check, PartyPopper, MessageCircle } from 'lucide-react';
+import { X, Users, Plus, Check, PartyPopper, MessageCircle, Activity } from 'lucide-react';
 import NearbyMap from '@/components/NearbyMap';
 import NearbyGroups from '@/components/NearbyGroups';
 import LocationSelector from '@/components/LocationSelector';
 import GroupChat from '@/components/GroupChat';
-import { NearbyGroup, City, defaultCity, getGroupsForCity } from '@/lib/mockData';
+import CreateGroupModal from '@/components/CreateGroupModal';
+import UserProfileModal from '@/components/UserProfileModal';
+import DirectMessageModal from '@/components/DirectMessageModal';
+import ActivityFeed from '@/components/ActivityFeed';
+import { StoriesRow, StoryViewer } from '@/components/StoriesViewer';
+import { NearbyGroup, NearbyUser, City, defaultCity, getGroupsForCity, getUsersForCity } from '@/lib/mockData';
 import styles from './nearby.module.css';
 
 export default function NearbyPage() {
@@ -17,9 +22,24 @@ export default function NearbyPage() {
     const [showConfetti, setShowConfetti] = useState(false);
     const [showChat, setShowChat] = useState(false);
     const [chatGroup, setChatGroup] = useState<NearbyGroup | null>(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [customGroups, setCustomGroups] = useState<(NearbyGroup & { lat: number; lng: number })[]>([]);
 
-    // Get groups for the selected city
+    // User Profile state
+    const [selectedUser, setSelectedUser] = useState<(NearbyUser & { lat: number; lng: number }) | null>(null);
+
+    // Direct Message state
+    const [dmUser, setDmUser] = useState<NearbyUser | null>(null);
+
+    // Stories state
+    const [viewingStoryUser, setViewingStoryUser] = useState<string | null>(null);
+
+    // Activity panel state
+    const [showActivityPanel, setShowActivityPanel] = useState(false);
+
+    // Get groups and users for the selected city + custom created groups
     const cityGroups = getGroupsForCity(selectedCity);
+    const allGroups = [...cityGroups, ...customGroups];
 
     const handleGroupSelect = (group: NearbyGroup) => {
         setSelectedGroup(group);
@@ -29,10 +49,15 @@ export default function NearbyPage() {
         }
     };
 
+    const handleUserSelect = (user: NearbyUser & { lat: number; lng: number }) => {
+        setSelectedUser(user);
+    };
+
     const handleCityChange = (city: City) => {
         setSelectedCity(city);
         setSelectedGroup(null);
         setJoinedGroupId(null);
+        setSelectedUser(null);
     };
 
     const closeOverlay = () => {
@@ -70,10 +95,43 @@ export default function NearbyPage() {
         setChatGroup(null);
     };
 
+    const handleCreateGroup = (groupData: Omit<NearbyGroup, 'id' | 'members'> & { latOffset: number; lngOffset: number }) => {
+        const newGroup: NearbyGroup & { lat: number; lng: number } = {
+            id: `custom-${Date.now()}`,
+            name: groupData.name,
+            description: groupData.description || '',
+            emoji: groupData.emoji,
+            category: groupData.category,
+            memberCount: groupData.memberCount,
+            latOffset: groupData.latOffset,
+            lngOffset: groupData.lngOffset,
+            members: [
+                { id: 'current-user', name: 'You', avatar: 'https://i.pravatar.cc/150?img=68' }
+            ],
+            lat: selectedCity.lat + groupData.latOffset,
+            lng: selectedCity.lng + groupData.lngOffset,
+        };
+
+        setCustomGroups(prev => [...prev, newGroup]);
+        setShowCreateModal(false);
+
+        // Auto-select and join the created group
+        setSelectedGroup(newGroup);
+        setJoinedGroupId(newGroup.id);
+    };
+
+    const handleOpenDM = (user: NearbyUser) => {
+        setDmUser(user);
+        setSelectedUser(null); // Close profile modal
+    };
+
     const isGroupJoined = selectedGroup && joinedGroupId === selectedGroup.id;
 
     return (
         <div className={styles.pageWrapper}>
+            {/* Stories Row */}
+            <StoriesRow onViewStory={(userId) => setViewingStoryUser(userId)} />
+
             {/* Hero Section */}
             <section className={styles.hero}>
                 <div className="container">
@@ -96,19 +154,37 @@ export default function NearbyPage() {
                     <NearbyMap
                         selectedCity={selectedCity}
                         onGroupSelect={handleGroupSelect}
+                        onUserSelect={handleUserSelect}
                         selectedGroup={selectedGroup}
                     />
                 </div>
                 <div className={styles.groupsSection}>
-                    <NearbyGroups
-                        groups={cityGroups}
-                        onGroupSelect={handleGroupSelect}
-                    />
+                    {/* Activity Feed Toggle */}
+                    <button
+                        className={styles.activityToggle}
+                        onClick={() => setShowActivityPanel(!showActivityPanel)}
+                    >
+                        <Activity size={18} />
+                        Recent Activity
+                    </button>
+
+                    {showActivityPanel ? (
+                        <ActivityFeed />
+                    ) : (
+                        <NearbyGroups
+                            groups={allGroups}
+                            onGroupSelect={handleGroupSelect}
+                        />
+                    )}
                 </div>
             </div>
 
             {/* Floating Action Button (Mobile) */}
-            <button className={styles.fab} aria-label="Create group">
+            <button
+                className={styles.fab}
+                aria-label="Create group"
+                onClick={() => setShowCreateModal(true)}
+            >
                 <Plus size={24} />
             </button>
 
@@ -242,6 +318,39 @@ export default function NearbyPage() {
             {/* Group Chat */}
             {showChat && chatGroup && (
                 <GroupChat group={chatGroup} onClose={handleCloseChat} />
+            )}
+
+            {/* Create Group Modal */}
+            {showCreateModal && (
+                <CreateGroupModal
+                    onClose={() => setShowCreateModal(false)}
+                    onCreate={handleCreateGroup}
+                />
+            )}
+
+            {/* User Profile Modal */}
+            {selectedUser && (
+                <UserProfileModal
+                    user={selectedUser}
+                    onClose={() => setSelectedUser(null)}
+                    onMessage={handleOpenDM}
+                />
+            )}
+
+            {/* Direct Message Modal */}
+            {dmUser && (
+                <DirectMessageModal
+                    user={dmUser}
+                    onClose={() => setDmUser(null)}
+                />
+            )}
+
+            {/* Story Viewer */}
+            {viewingStoryUser && (
+                <StoryViewer
+                    userId={viewingStoryUser}
+                    onClose={() => setViewingStoryUser(null)}
+                />
             )}
         </div>
     );

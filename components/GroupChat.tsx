@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Image, Smile, X, ChevronLeft, MoreHorizontal } from 'lucide-react';
+import { Send, Image, Smile, X, ChevronLeft, MoreHorizontal, Camera } from 'lucide-react';
 import { NearbyGroup } from '@/lib/mockData';
 import { ChatMessage, getMockMessages, formatMessageTime, availableReactions, currentUser } from '@/lib/chatData';
 import styles from './GroupChat.module.css';
@@ -11,13 +11,26 @@ interface GroupChatProps {
     onClose: () => void;
 }
 
+// Sample photos for demo
+const samplePhotos = [
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=400&h=300&fit=crop',
+];
+
 export default function GroupChat({ group, onClose }: GroupChatProps) {
     const [messages, setMessages] = useState<ChatMessage[]>(() => getMockMessages(group.id));
     const [newMessage, setNewMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [activeReactionMessage, setActiveReactionMessage] = useState<string | null>(null);
+    const [showPhotoPicker, setShowPhotoPicker] = useState(false);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Scroll to bottom on new messages
     useEffect(() => {
@@ -25,7 +38,7 @@ export default function GroupChat({ group, onClose }: GroupChatProps) {
     }, [messages]);
 
     const handleSendMessage = () => {
-        if (!newMessage.trim()) return;
+        if (!newMessage.trim() && !imagePreview) return;
 
         const message: ChatMessage = {
             id: `${group.id}-msg-${Date.now()}`,
@@ -36,11 +49,13 @@ export default function GroupChat({ group, onClose }: GroupChatProps) {
             content: newMessage,
             timestamp: new Date(),
             reactions: [],
-            type: 'text',
+            type: imagePreview ? 'image' : 'text',
+            imageUrl: imagePreview || undefined,
         };
 
         setMessages(prev => [...prev, message]);
         setNewMessage('');
+        setImagePreview(null);
         inputRef.current?.focus();
     };
 
@@ -93,6 +108,23 @@ export default function GroupChat({ group, onClose }: GroupChatProps) {
         setNewMessage(prev => prev + emoji);
         setShowEmojiPicker(false);
         inputRef.current?.focus();
+    };
+
+    const handlePhotoSelect = (photoUrl: string) => {
+        setImagePreview(photoUrl);
+        setShowPhotoPicker(false);
+    };
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+        setShowPhotoPicker(false);
     };
 
     return (
@@ -148,12 +180,23 @@ export default function GroupChat({ group, onClose }: GroupChatProps) {
                             {message.userId !== currentUser.id && (
                                 <span className={styles.messageAuthor}>{message.userName}</span>
                             )}
-                            <div
-                                className={styles.messageBubble}
-                                onDoubleClick={() => setActiveReactionMessage(message.id)}
-                            >
-                                {message.content}
-                            </div>
+
+                            {/* Image message */}
+                            {message.type === 'image' && message.imageUrl && (
+                                <div className={styles.imageMessage}>
+                                    <img src={message.imageUrl} alt="Shared photo" className={styles.sharedImage} />
+                                </div>
+                            )}
+
+                            {/* Text bubble */}
+                            {message.content && (
+                                <div
+                                    className={styles.messageBubble}
+                                    onDoubleClick={() => setActiveReactionMessage(message.id)}
+                                >
+                                    {message.content}
+                                </div>
+                            )}
 
                             {/* Reactions */}
                             {message.reactions.length > 0 && (
@@ -199,6 +242,50 @@ export default function GroupChat({ group, onClose }: GroupChatProps) {
                 <div ref={messagesEndRef} />
             </div>
 
+            {/* Image Preview */}
+            {imagePreview && (
+                <div className={styles.imagePreviewContainer}>
+                    <img src={imagePreview} alt="Preview" className={styles.previewImage} />
+                    <button className={styles.removePreview} onClick={() => setImagePreview(null)}>
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
+
+            {/* Photo Picker */}
+            {showPhotoPicker && (
+                <div className={styles.photoPicker}>
+                    <div className={styles.photoPickerHeader}>
+                        <span>Share a Photo</span>
+                        <button onClick={() => setShowPhotoPicker(false)}>
+                            <X size={18} />
+                        </button>
+                    </div>
+                    <div className={styles.photoGrid}>
+                        <label className={styles.uploadBtn}>
+                            <Camera size={24} />
+                            <span>Upload</span>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileSelect}
+                                hidden
+                            />
+                        </label>
+                        {samplePhotos.map((photo, i) => (
+                            <button
+                                key={i}
+                                className={styles.photoOption}
+                                onClick={() => handlePhotoSelect(photo)}
+                            >
+                                <img src={photo} alt={`Sample ${i + 1}`} />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Input */}
             <div className={styles.inputContainer}>
                 <div className={styles.inputWrapper}>
@@ -227,21 +314,24 @@ export default function GroupChat({ group, onClose }: GroupChatProps) {
                         ref={inputRef}
                         type="text"
                         className={styles.input}
-                        placeholder="Send a message..."
+                        placeholder={imagePreview ? "Add a caption..." : "Send a message..."}
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
                     />
 
-                    <button className={styles.inputBtn}>
+                    <button
+                        className={styles.inputBtn}
+                        onClick={() => setShowPhotoPicker(!showPhotoPicker)}
+                    >
                         <Image size={22} />
                     </button>
                 </div>
 
                 <button
-                    className={`${styles.sendBtn} ${newMessage.trim() ? styles.sendBtnActive : ''}`}
+                    className={`${styles.sendBtn} ${(newMessage.trim() || imagePreview) ? styles.sendBtnActive : ''}`}
                     onClick={handleSendMessage}
-                    disabled={!newMessage.trim()}
+                    disabled={!newMessage.trim() && !imagePreview}
                 >
                     <Send size={20} />
                 </button>

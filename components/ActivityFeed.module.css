@@ -1,0 +1,142 @@
+.container {
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--primary);
+}
+
+.title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0;
+    font-family: var(--font-body);
+}
+
+.feedList {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.feedItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+}
+
+.feedItem:hover {
+    background: var(--background);
+}
+
+.feedItem:last-child {
+    border-bottom: none;
+}
+
+.avatarWrapper {
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.activityIcon {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--surface);
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+}
+
+.text {
+    font-size: 14px;
+    color: var(--text-main);
+    line-height: 1.4;
+    margin: 0 0 4px;
+}
+
+.text strong {
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.text strong:hover {
+    color: var(--primary);
+}
+
+.messagePreview {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 6px 0;
+    padding: 8px 12px;
+    background: var(--background);
+    border-radius: 8px;
+    font-style: italic;
+}
+
+.photoPreview {
+    margin: 8px 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.photoPreview img {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.time {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.viewBtn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--background);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.viewBtn:hover {
+    background: var(--primary);
+    color: white;
+}

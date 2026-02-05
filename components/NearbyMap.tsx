@@ -25,7 +25,7 @@ const Popup = dynamic(
 
 interface NearbyMapProps {
     selectedCity: City;
-    onUserSelect?: (user: NearbyUser) => void;
+    onUserSelect?: (user: NearbyUser & { lat: number; lng: number }) => void;
     onGroupSelect?: (group: NearbyGroup) => void;
     selectedGroup?: NearbyGroup | null;
 }
